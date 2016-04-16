@@ -1,4 +1,18 @@
-/.tox/
-/.coverage
-/dist/
-/htmlcov/
+*.py[cod]
+
+# Packages
+*.egg*
+*.egg-info
+dist
+build/
+eggs
+
+# Unit test / coverage reports
+cover/
+.coverage*
+!.coveragerc
+.tox
+nosetests.xml
+.testrepository
+.venv
+htmlcov
