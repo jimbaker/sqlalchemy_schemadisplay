@@ -20,11 +20,11 @@ def _mk_label(mapper, show_operations, show_attributes, show_datatypes, show_inh
             cols = [c for c in mapper.columns if c.table == mapper.tables[0]]
         else:
             cols = mapper.columns
-        html += '<TR><TD ALIGN="LEFT">%s</TD></TR>' % '<BR ALIGN="LEFT"/>'.join(format_col(col) for col in cols)
+        html += '<TR><TD ALIGN="LEFT">%s<BR ALIGN="LEFT"/></TD></TR>' % '<BR ALIGN="LEFT"/>'.join(format_col(col) for col in cols)
     else:
         [format_col(col) for col in sorted(mapper.columns, key=lambda col:not col.primary_key)]
     if show_operations:
-        html += '<TR><TD ALIGN="LEFT">%s</TD></TR>' % '<BR ALIGN="LEFT"/>'.join(
+        html += '<TR><TD ALIGN="LEFT">%s<BR ALIGN="LEFT"/></TD></TR>' % '<BR ALIGN="LEFT"/>'.join(
             '%s(%s)' % (name,", ".join(default is _mk_label and ("%s") % arg or ("%s=%s" % (arg,repr(default))) for default,arg in
                 zip((func.func_defaults and len(func.func_code.co_varnames)-1-(len(func.func_defaults) or 0) or func.func_code.co_argcount-1)*[_mk_label]+list(func.func_defaults or []), func.func_code.co_varnames[1:])
             ))
@@ -85,14 +85,17 @@ def create_uml_graph(mappers, show_operations=True, show_attributes=True, show_i
             args['taillabel'] = calc_label(dest,src)
             args['arrowtail'] = 'none'
             args['arrowhead'] = 'none'
-            args['constraint'] = False
+            args['constraint'] = 'false'
         else:
             prop, = relation
+            has_fk = any(col.foreign_keys for col in prop.local_columns)
             from_name = escape(prop.parent.class_.__name__)
             to_name = escape(prop.mapper.class_.__name__)
             args['headlabel'] = '+%s%s' % (prop.key, multiplicity_indicator(prop))
             args['arrowtail'] = 'none'
             args['arrowhead'] = 'vee'
+            if has_fk:
+                args['constraint'] = 'false'
 
         graph.add_edge(pydot.Edge(from_name,to_name,
             fontname=font, fontsize="7.0", style="setlinewidth(%s)"%linewidth, arrowsize=str(linewidth),
